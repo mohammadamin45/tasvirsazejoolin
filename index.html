@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Image Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+        #image-container {
+            width: 100%;
+            max-width: 500px;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        #text-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        #generate-button {
+            padding: 10px 20px;
+            background-color: #561646;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #generate-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div id="image-container">
+    <img id="image" src="undefined.jpg" alt="Generated Image">
+</div>
+<input type="text" id="text-input" placeholder="Enter text...">
+<button id="generate-button">تصویر رو بساز</button>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const generateButton = document.getElementById('generate-button');
+    const textInput = document.getElementById('text-input');
+    const imageContainer = document.getElementById('image');
+
+    generateButton.addEventListener('click', async () => {
+        const userInput = textInput.value;
+        if (!userInput) {
+            alert('Please enter some text.');
+            return;
+        }
+
+        // Generate the image URL
+        const width = 1080;
+        const height = 1920;
+        const seed = Math.floor(Math.random() * 10000) + 1;
+        const model = 'YOUR_MODEL_NAME';
+        const nologo = 245327847324;
+
+        const imageUrl = `https://pollinations.ai/prompt/${encodeURIComponent(userInput)}?width=${width}&height=${height}&seed=${seed}&model=${model}&nofeed=true&nologo=${nologo}`;
+
+        // Display the image
+        imageContainer.src = imageUrl;
+    });
+</script>
+
+</body>
+</html>
