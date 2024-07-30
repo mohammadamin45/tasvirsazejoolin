@@ -26,11 +26,35 @@
             margin-bottom: 20px;
             border-radius: 10px;
             overflow: hidden;
+            position: relative;
         }
         #image {
             width: 100%;
             height: auto;
             border-radius: 10px;
+            display: none;
+        }
+        #loading-bar-container {
+            width: 100%;
+            max-width: 500px;
+            height: 4px;
+            background-color: #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none; /* Initially hide the loading bar */
+        }
+        #loading-bar {
+            width: 0;
+            height: 100%;
+            background-color: #561646;
+            animation: loading 2s linear infinite;
+        }
+        @keyframes loading {
+            0% { width: 0; }
+            100% { width: 100%; }
         }
         #text-input {
             width: 100%;
@@ -57,7 +81,10 @@
 <body>
 
 <div id="image-container">
-    <img id="image" src="undefined.jpg" alt="Generated Image">
+    <img id="image" src="" alt="Generated Image">
+    <div id="loading-bar-container">
+        <div id="loading-bar"></div>
+    </div>
 </div>
 <input type="text" id="text-input" placeholder="متن خود را وارد کنید...">
 <button id="generate-button">تصویر رو بساز</button>
@@ -66,7 +93,8 @@
 <script>
     const generateButton = document.getElementById('generate-button');
     const textInput = document.getElementById('text-input');
-    const imageContainer = document.getElementById('image');
+    const imageElement = document.getElementById('image');
+    const loadingBarContainer = document.getElementById('loading-bar-container');
 
     generateButton.addEventListener('click', async () => {
         const userInput = textInput.value;
@@ -79,13 +107,36 @@
         const width = 1080;
         const height = 1920;
         const seed = Math.floor(Math.random() * 10000) + 1;
-        const model = 'YOUR_MODEL_NAME';
+        const model = 'YOUR_VALID_MODEL_NAME'; // Replace with your model name
         const nologo = 245327847324;
+        const cacheBuster = new Date().getTime(); // Add a cache-busting parameter
 
-        const imageUrl = `https://pollinations.ai/prompt/${encodeURIComponent(userInput)}?width=${width}&height=${height}&seed=${seed}&model=${model}&nofeed=true&nologo=${nologo}`;
+        const imageUrl = `https://pollinations.ai/prompt/${encodeURIComponent(userInput)}?width=${width}&height=${height}&seed=${seed}&model=${model}&nofeed=true&nologo=${nologo}&_=${cacheBuster}`;
 
-        // Display the image
-        imageContainer.src = imageUrl;
+        // Show loading bar
+        loadingBarContainer.style.display = 'block';
+        imageElement.style.display = 'none';
+
+        try {
+            // Load the image
+            imageElement.src = imageUrl;
+            
+            // Event listener for image load
+            imageElement.onload = () => {
+                loadingBarContainer.style.display = 'none';
+                imageElement.style.display = 'block';
+            };
+
+            // Event listener for image error
+            imageElement.onerror = () => {
+                loadingBarContainer.style.display = 'none';
+                alert('Failed to load image. Please try again.');
+            };
+        } catch (error) {
+            loadingBarContainer.style.display = 'none';
+            console.error('Error fetching image:', error);
+            alert('Failed to generate image. Please try again.');
+        }
     });
 </script>
 
